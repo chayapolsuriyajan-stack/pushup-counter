@@ -39,10 +39,10 @@ export async function createPoseLandmarker() {
   }
 }
 
-/** Open the rear camera. Throws if permission is denied or no camera exists. */
+/** Open the front camera. Throws if permission is denied or no camera exists. */
 export async function startCamera(videoEl) {
   const stream = await navigator.mediaDevices.getUserMedia({
-    video: { facingMode: "environment", width: { ideal: 1280 } },
+    video: { facingMode: "user", width: { ideal: 1280 } },
     audio: false,
   });
   videoEl.srcObject = stream;

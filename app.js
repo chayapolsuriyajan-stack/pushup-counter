@@ -10,9 +10,11 @@ const permissionMessage = document.getElementById("permission-message");
 
 const cameraScreen = document.getElementById("camera-screen");
 const scoreboardScreen = document.getElementById("scoreboard-screen");
+const startOverlay = document.getElementById("start-overlay");
 document.getElementById("scoreboard-btn").addEventListener("click", showScoreboard);
 document.getElementById("back-btn").addEventListener("click", showCamera);
 document.getElementById("finish-btn").addEventListener("click", finishSet);
+document.getElementById("start-btn").addEventListener("click", handleStart);
 
 const counter = new RepCounter(CONFIG);
 let wakeLock = null;
@@ -76,6 +78,16 @@ function showCamera() {
   cameraScreen.classList.remove("hidden");
 }
 
+async function handleStart() {
+  // Chrome only allows navigator.vibrate() after the page has seen a real
+  // click — this is the click. It unlocks vibration for the rest of the
+  // page's life, so later calls from the detection loop (no gesture of
+  // their own) will actually fire.
+  vibrate(1);
+  startOverlay.classList.add("hidden");
+  await main();
+}
+
 async function main() {
   try {
     await startCamera(video);
@@ -128,5 +140,3 @@ async function main() {
   }
   requestAnimationFrame(frame);
 }
-
-main();
