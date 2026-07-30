@@ -1,0 +1,160 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #0b0f14;
+  color: #f0f4f8;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  overscroll-behavior: none;
+}
+
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --- Camera screen --- */
+
+.camera-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: #000;
+}
+
+#video, #overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#video {
+  transform: scaleX(-1); /* mirror for a natural "looking at yourself" feel */
+}
+
+#overlay {
+  transform: scaleX(-1);
+  pointer-events: none;
+}
+
+.banner {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 12px);
+  left: 12px;
+  right: 12px;
+  background: #7a1f1f;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 15px;
+  z-index: 5;
+}
+
+.hud {
+  padding: 16px 20px calc(20px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  background: #0b0f14;
+}
+
+.rep-count {
+  font-size: min(28vw, 140px);
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.btn {
+  flex: 1;
+  padding: 16px;
+  border-radius: 12px;
+  border: none;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #3ddc84;
+  color: #06210f;
+}
+
+.btn-ghost {
+  background: #1c2530;
+  color: #f0f4f8;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* --- Scoreboard screen --- */
+
+#scoreboard-screen {
+  padding: calc(24px + env(safe-area-inset-top)) 20px 24px;
+  overflow-y: auto;
+}
+
+#scoreboard-screen h1 {
+  margin: 0 0 20px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat {
+  background: #1c2530;
+  border-radius: 12px;
+  padding: 16px 8px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+  font-size: 13px;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+.recent-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+}
+
+.recent-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 4px;
+  border-bottom: 1px solid #1c2530;
+  font-size: 16px;
+}

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Push-up Counter</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <meta name="theme-color" content="#0b0f14" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main id="camera-screen" class="screen">
+    <div class="camera-wrap">
+      <video id="video" playsinline muted></video>
+      <canvas id="overlay"></canvas>
+    </div>
+
+    <div id="permission-message" class="banner hidden"></div>
+
+    <div class="hud">
+      <div id="rep-count" class="rep-count">0</div>
+      <div class="hud-row">
+        <button id="finish-btn" class="btn btn-primary">Finish set</button>
+        <button id="scoreboard-btn" class="btn btn-ghost">Scoreboard</button>
+      </div>
+    </div>
+  </main>
+
+  <main id="scoreboard-screen" class="screen hidden">
+    <h1>Scoreboard</h1>
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-value" id="stat-today">0</div>
+        <div class="stat-label">Today</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="stat-best">0</div>
+        <div class="stat-label">Best session</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="stat-streak">0</div>
+        <div class="stat-label">Day streak</div>
+      </div>
+    </div>
+    <h2>Recent sessions</h2>
+    <ul id="recent-list" class="recent-list"></ul>
+    <button id="back-btn" class="btn btn-primary">Back to camera</button>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
