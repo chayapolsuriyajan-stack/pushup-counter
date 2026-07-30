@@ -85,3 +85,18 @@ export function pickVisibleArm(worldLandmarks, landmarks, minVisibility) {
     wrist: worldLandmarks[best.wrist],
   };
 }
+
+/**
+ * Diagnostic signal for head-on camera placements, where elbow angle
+ * foreshortens badly: apparent shoulder width in normalised 2D image
+ * coordinates. As the torso approaches the camera (bottom of a push-up
+ * done facing the phone) this grows; as it retreats, it shrinks. Distance
+ * scale is setup-dependent (phone distance varies), so this is for reading
+ * on screen and eyeballing, not yet wired into rep counting.
+ */
+export function apparentShoulderWidth(landmarks) {
+  const l = landmarks[11];
+  const r = landmarks[12];
+  if (!l || !r) return null;
+  return Math.hypot(l.x - r.x, l.y - r.y);
+}

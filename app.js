@@ -1,5 +1,5 @@
 import { createPoseLandmarker, startCamera, detectFrame, drawSkeleton, PoseLandmarker } from "./pose.js";
-import { RepCounter, CONFIG, jointAngle, pickVisibleArm } from "./counter.js";
+import { RepCounter, CONFIG, jointAngle, pickVisibleArm, apparentShoulderWidth } from "./counter.js";
 import { recordSession, getScoreboard } from "./store.js";
 
 const video = document.getElementById("video");
@@ -125,10 +125,13 @@ async function main() {
     if (result && result.landmarks?.length && result.worldLandmarks?.length) {
       drawSkeleton(overlayCtx, result, PoseLandmarker.POSE_CONNECTIONS);
 
+      const width = apparentShoulderWidth(result.landmarks[0]);
+      const widthText = width != null ? `width ${Math.round(width * 1000)}` : "width n/a";
+
       const arm = pickVisibleArm(result.worldLandmarks[0], result.landmarks[0], CONFIG.minVisibility);
       if (arm) {
         const angle = jointAngle(arm.shoulder, arm.elbow, arm.wrist);
-        debugReadout.textContent = `elbow ${Math.round(angle ?? 0)}° · state ${counter.state}`;
+        debugReadout.textContent = `elbow ${Math.round(angle ?? 0)}° · state ${counter.state} · ${widthText}`;
         const before = counter.reps;
         counter.update(angle, performance.now());
         if (counter.reps > before) {
@@ -136,7 +139,7 @@ async function main() {
           vibrate(60);
         }
       } else {
-        debugReadout.textContent = "no confident arm visible";
+        debugReadout.textContent = `no confident arm visible · ${widthText}`;
       }
     }
 
