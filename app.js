@@ -7,6 +7,7 @@ const overlay = document.getElementById("overlay");
 const overlayCtx = overlay.getContext("2d");
 const repCountEl = document.getElementById("rep-count");
 const permissionMessage = document.getElementById("permission-message");
+const debugReadout = document.getElementById("debug-readout");
 
 const cameraScreen = document.getElementById("camera-screen");
 const scoreboardScreen = document.getElementById("scoreboard-screen");
@@ -127,12 +128,15 @@ async function main() {
       const arm = pickVisibleArm(result.worldLandmarks[0], result.landmarks[0], CONFIG.minVisibility);
       if (arm) {
         const angle = jointAngle(arm.shoulder, arm.elbow, arm.wrist);
+        debugReadout.textContent = `elbow ${Math.round(angle ?? 0)}° · state ${counter.state}`;
         const before = counter.reps;
         counter.update(angle, performance.now());
         if (counter.reps > before) {
           repCountEl.textContent = String(counter.reps);
           vibrate(60);
         }
+      } else {
+        debugReadout.textContent = "no confident arm visible";
       }
     }
 

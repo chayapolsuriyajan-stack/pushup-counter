@@ -49,6 +49,19 @@ html, body {
   pointer-events: none;
 }
 
+.debug-readout {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 12px);
+  left: 12px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #3ddc84;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  z-index: 4;
+}
+
 .banner {
   position: absolute;
   top: calc(env(safe-area-inset-top) + 12px);
