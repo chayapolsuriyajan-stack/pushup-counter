@@ -5,5 +5,9 @@
   "3": "SignalCalibrator",
   "4": "RepCounter",
   "5": "counter.js",
-  "6": "handleStart"
+  "6": "handleStart",
+  "7": "BottomNav.jsx",
+  "8": "SignalCalibrator",
+  "9": "copy-mediapipe-wasm.mjs",
+  "10": "vite.config.js"
 }
