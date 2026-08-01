@@ -1,0 +1,15 @@
+.wrap {
+  text-align: center;
+  padding: var(--space-4) var(--space-2);
+  color: var(--color-text-secondary);
+}
+
+.title {
+  color: var(--color-text-primary);
+  font-weight: 500;
+  margin-bottom: var(--space-1);
+}
+
+.body {
+  font-size: 14px;
+}

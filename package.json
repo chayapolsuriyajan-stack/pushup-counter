@@ -1,0 +1,26 @@
+{
+  "name": "pushup-counter",
+  "private": true,
+  "type": "module",
+  "version": "2.0.0",
+  "scripts": {
+    "dev": "npm run copy:wasm && vite",
+    "build": "npm run copy:wasm && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "copy:wasm": "node scripts/copy-mediapipe-wasm.mjs"
+  },
+  "dependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-router-dom": "7.18.2",
+    "@mediapipe/tasks-vision": "1.0.0",
+    "@fontsource/inter": "^5",
+    "@fontsource/jetbrains-mono": "^5"
+  },
+  "devDependencies": {
+    "vite": "8.2.0",
+    "@vitejs/plugin-react": "6.0.5",
+    "vitest": "^3"
+  }
+}
