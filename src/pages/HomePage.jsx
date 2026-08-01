@@ -33,7 +33,7 @@ export default function HomePage() {
           <MetricTile value={streak} label="Day streak" />
         </div>
 
-        <Card className={s.full}>
+        <Card className={hasAnyHistory ? "" : s.full}>
           <div className={s.cardTitle}>Activity</div>
           {hasAnyHistory ? (
             <Heatmap repsByDay={heatmapData(store)} />
@@ -43,7 +43,7 @@ export default function HomePage() {
         </Card>
 
         {hasAnyHistory && (
-          <Card className={s.full}>
+          <Card>
             <div className={s.cardTitle}>Last 30 days</div>
             <LineChart series={dailySeries(store, 30)} />
           </Card>
