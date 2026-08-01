@@ -18,7 +18,14 @@
 
     <div id="permission-message" class="banner hidden"></div>
 
-    <div id="debug-readout" class="debug-readout"></div>
+    <div id="calibration-bar" class="calibration-bar hidden">
+      <div id="calibration-track" class="calibration-bar__track">
+        <div class="calibration-bar__zone calibration-bar__zone--up"></div>
+        <div class="calibration-bar__zone calibration-bar__zone--down"></div>
+        <div id="calibration-dot" class="calibration-dot"></div>
+      </div>
+      <div id="tracking-label" class="tracking-label"></div>
+    </div>
 
     <div id="start-overlay" class="start-overlay">
       <button id="start-btn" class="btn btn-primary btn-large">Start</button>

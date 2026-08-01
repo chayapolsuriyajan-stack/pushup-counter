@@ -1,10 +1,29 @@
-// Pure rep-counting logic. No DOM, no camera — just angles in, state out.
+// Pure rep-counting logic. No DOM, no camera — just a signal in, state out.
 // Tune these against your real body and camera distance.
 export const CONFIG = {
-  downEnterAngle: 90,   // elbow angle must drop below this to register the bottom
-  upEnterAngle: 160,    // elbow angle must rise above this to complete the rep
-  minRepMs: 400,        // reject anything faster than this as jitter/noise
+  downEnter: 90,   // elbow angle must drop below this to register the bottom
+  upEnter: 160,    // elbow angle must rise above this to complete the rep
+  minRepMs: 400,   // reject anything faster than this as jitter/noise
   minVisibility: 0.6,   // ignore landmarks the model isn't confident about
+
+  // SignalCalibrator tuning — see that class below.
+  minSwingAngleDeg: 40,        // min observed elbow-angle swing before it can be trusted
+  minSwingWidthFrac: 0.02,     // min observed shoulder-width swing before it can be trusted
+  calibrationWarmupMs: 500,    // ignore lock-in decisions before this much data is buffered
+  calibrationEmaAlpha: 0.25,   // smoothing factor for ordinary per-frame landmark jitter
+  maxJumpAngleDeg: 60,         // reject a single-frame angle sample that jumps more than this
+  maxJumpWidthFrac: 0.15,      // reject a single-frame width sample that jumps more than this
+};
+
+// Thresholds for the post-calibration phase, once a signal has been
+// normalized to 0 (down) .. 1 (up). Mirrors the original 90/160 out of a
+// ~180 degree range (50%/89%), nudged to 85% so a rep doesn't require
+// hitting the literal extreme of the observed range.
+export const NORMALIZED_CONFIG = {
+  downEnter: 0.5,
+  upEnter: 0.85,
+  minRepMs: CONFIG.minRepMs,
+  minVisibility: CONFIG.minVisibility,
 };
 
 /**
@@ -41,14 +60,14 @@ export class RepCounter {
     this.lastRepAt = 0;
   }
 
-  /** Feed one elbow-angle sample (degrees) at time `now` (ms). */
-  update(angle, now) {
-    if (angle == null) return this.reps;
-    const { downEnterAngle, upEnterAngle, minRepMs } = this.config;
+  /** Feed one sample (raw angle in degrees, or a normalized 0..1 position) at time `now` (ms). */
+  update(value, now) {
+    if (value == null) return this.reps;
+    const { downEnter, upEnter, minRepMs } = this.config;
 
-    if (this.state === "UP" && angle < downEnterAngle) {
+    if (this.state === "UP" && value < downEnter) {
       this.state = "DOWN";
-    } else if (this.state === "DOWN" && angle > upEnterAngle) {
+    } else if (this.state === "DOWN" && value > upEnter) {
       if (now - this.lastRepAt >= minRepMs) {
         this.reps += 1;
         this.lastRepAt = now;
@@ -87,16 +106,121 @@ export function pickVisibleArm(worldLandmarks, landmarks, minVisibility) {
 }
 
 /**
- * Diagnostic signal for head-on camera placements, where elbow angle
+ * Alternative signal for head-on camera placements, where elbow angle
  * foreshortens badly: apparent shoulder width in normalised 2D image
  * coordinates. As the torso approaches the camera (bottom of a push-up
  * done facing the phone) this grows; as it retreats, it shrinks. Distance
- * scale is setup-dependent (phone distance varies), so this is for reading
- * on screen and eyeballing, not yet wired into rep counting.
+ * scale is setup-dependent (phone distance varies) — SignalCalibrator
+ * normalizes it against its own observed range rather than any fixed scale.
  */
-export function apparentShoulderWidth(landmarks) {
+export function apparentShoulderWidth(landmarks, minVisibility) {
   const l = landmarks[11];
   const r = landmarks[12];
   if (!l || !r) return null;
+  if (
+    minVisibility != null &&
+    ((l.visibility ?? 0) < minVisibility || (r.visibility ?? 0) < minVisibility)
+  ) {
+    return null;
+  }
   return Math.hypot(l.x - r.x, l.y - r.y);
+}
+
+/**
+ * Watches both the elbow-angle and shoulder-width signals, picks whichever
+ * one shows a real range of motion, and calibrates its own min/max from
+ * what it observes — so rep counting works whether the camera ends up
+ * side-on (angle wins) or head-on (width wins), without any manual setup.
+ *
+ * Locks onto a signal exactly once per session and never re-evaluates the
+ * choice, so the bar/counter can't flicker between two different physical
+ * quantities mid-set.
+ */
+export class SignalCalibrator {
+  constructor(config = CONFIG) {
+    this.config = config;
+    this.locked = false;
+    this.signal = null; // "angle" | "width"
+    this.startedAt = null;
+    this._angle = this._freshTrack();
+    this._width = this._freshTrack();
+  }
+
+  _freshTrack() {
+    return { ema: null, min: null, max: null };
+  }
+
+  /** raw angle in degrees (or null), raw width 0..1 (or null), now = performance.now() */
+  update(angle, width, now) {
+    if (this.startedAt == null && (angle != null || width != null)) this.startedAt = now;
+
+    if (this.locked) {
+      const track = this.signal === "angle" ? this._angle : this._width;
+      const raw = this.signal === "angle" ? angle : width;
+      const maxJump = this.signal === "angle" ? this.config.maxJumpAngleDeg : this.config.maxJumpWidthFrac;
+      if (raw != null) this._observe(track, raw, maxJump);
+      return;
+    }
+
+    if (angle != null) this._observe(this._angle, angle, this.config.maxJumpAngleDeg);
+    if (width != null) this._observe(this._width, width, this.config.maxJumpWidthFrac);
+    this._maybeLockIn(now);
+  }
+
+  // Rejects a single-frame sample that jumps implausibly far from the last
+  // smoothed value (a wild landmark misdetection, not real motion — a real
+  // joint can't move that far in one ~33ms frame), then folds anything that
+  // survives into a light EMA before updating the running min/max. Because
+  // the outlier check happens on the raw sample *before* min/max ever sees
+  // it, min/max can just track the smoothed extremes directly: no separate
+  // "sustain for N frames" bookkeeping is needed, and — unlike an earlier
+  // version of this — a session that starts already at one extreme (e.g.
+  // arms extended, at rest, before the first push-up) doesn't get stuck
+  // waiting for confirmation that can never come once nothing beats it.
+  _observe(track, raw, maxJump) {
+    if (track.ema != null && Math.abs(raw - track.ema) > maxJump) return;
+    const alpha = this.config.calibrationEmaAlpha;
+    track.ema = track.ema == null ? raw : track.ema + alpha * (raw - track.ema);
+    track.min = track.min == null ? track.ema : Math.min(track.min, track.ema);
+    track.max = track.max == null ? track.ema : Math.max(track.max, track.ema);
+  }
+
+  _swing(track) {
+    return track.min != null && track.max != null ? track.max - track.min : 0;
+  }
+
+  _maybeLockIn(now) {
+    if (this.startedAt == null) return;
+    if (now - this.startedAt < this.config.calibrationWarmupMs) return;
+
+    const angleSwing = this._swing(this._angle);
+    const widthSwing = this._swing(this._width);
+    const angleReady = angleSwing >= this.config.minSwingAngleDeg;
+    const widthReady = widthSwing >= this.config.minSwingWidthFrac;
+    if (!angleReady && !widthReady) return;
+
+    if (angleReady && (!widthReady || angleSwing >= widthSwing)) {
+      this._lockIn("angle", this._angle);
+    } else {
+      this._lockIn("width", this._width);
+    }
+  }
+
+  _lockIn(signal, track) {
+    const pad = (track.max - track.min) * 0.05;
+    track.min -= pad;
+    track.max += pad;
+    this.signal = signal;
+    this.locked = true;
+  }
+
+  /** Normalized position: 0 = bottom of calibrated range (down), 1 = top (up). null if not ready. */
+  position(angle, width) {
+    if (!this.locked) return null;
+    const track = this.signal === "angle" ? this._angle : this._width;
+    const raw = this.signal === "angle" ? angle : width;
+    if (raw == null || track.min == null || track.max == null || track.max === track.min) return null;
+    const frac = Math.min(1, Math.max(0, (raw - track.min) / (track.max - track.min)));
+    return this.signal === "angle" ? frac : 1 - frac; // width is inverted: large width = close = down
+  }
 }

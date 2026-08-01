@@ -49,17 +49,68 @@ html, body {
   pointer-events: none;
 }
 
-.debug-readout {
+.calibration-bar {
   position: absolute;
-  top: calc(env(safe-area-inset-top) + 12px);
   left: 12px;
-  background: rgba(0, 0, 0, 0.55);
-  color: #3ddc84;
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-variant-numeric: tabular-nums;
+  top: calc(env(safe-area-inset-top) + 12px);
+  bottom: calc(env(safe-area-inset-bottom) + 84px); /* clear the .hud */
+  width: 28px;
   z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.calibration-bar__track {
+  position: relative;
+  flex: 1;
+  width: 14px;
+  border-radius: 7px;
+  background: #1c2530; /* neutral base = the visible hysteresis gap */
+}
+
+.calibration-bar__zone {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-radius: 7px;
+}
+
+.calibration-bar__zone--up {
+  top: 0;
+  height: var(--up-zone-frac, 15%);
+  background: rgba(61, 220, 132, 0.55); /* brighter = complete-rep zone */
+}
+
+.calibration-bar__zone--down {
+  bottom: 0;
+  height: var(--down-zone-frac, 50%);
+  background: rgba(61, 220, 132, 0.18); /* dim = down zone */
+}
+
+.calibration-dot {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 20px;
+  height: 20px;
+  margin-left: -10px;
+  margin-bottom: -10px;
+  border-radius: 50%;
+  background: #3ddc84;
+  box-shadow: 0 0 6px rgba(61, 220, 132, 0.8);
+  will-change: transform;
+}
+
+.tracking-label {
+  font-size: 11px;
+  color: #3ddc84;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 3px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .banner {
