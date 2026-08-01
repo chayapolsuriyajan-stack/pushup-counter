@@ -1,0 +1,67 @@
+.bar {
+  position: absolute;
+  left: var(--space-1);
+  top: calc(env(safe-area-inset-top) + var(--space-1));
+  bottom: calc(env(safe-area-inset-bottom) + 84px); /* clear the HUD */
+  width: 28px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.track {
+  position: relative;
+  flex: 1;
+  width: 14px;
+  border-radius: 7px;
+  background: var(--surface-2); /* neutral base = the visible hysteresis gap */
+}
+
+.zone {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-radius: 7px;
+}
+
+.zoneUp {
+  top: 0;
+  height: var(--up-zone-frac, 15%);
+  background: color-mix(in srgb, var(--surface-accent) 55%, transparent);
+}
+
+.zoneDown {
+  bottom: 0;
+  height: var(--down-zone-frac, 50%);
+  background: color-mix(in srgb, var(--surface-accent) 18%, transparent);
+}
+
+.dot {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 20px;
+  height: 20px;
+  margin-left: -10px;
+  margin-bottom: -10px;
+  border-radius: 50%;
+  background: var(--surface-accent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--surface-accent) 80%, transparent);
+  will-change: transform;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--surface-accent);
+  background: rgba(0, 0, 0, 0.55);
+  padding: 3px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+}

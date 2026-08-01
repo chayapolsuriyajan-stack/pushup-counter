@@ -1,0 +1,39 @@
+.title {
+  margin-bottom: var(--space-3);
+}
+
+.section + .section {
+  margin-top: var(--space-3);
+}
+
+.sectionTitle {
+  font-family: var(--font-mono);
+  font-size: var(--text-label-md);
+  font-weight: var(--fw-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-1);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--surface-2);
+  border-radius: var(--radius-control);
+}
+
+.row + .row {
+  margin-top: var(--space-1);
+}
+
+.rowLabel {
+  font-size: var(--text-body-md);
+}
+
+.durationGroup {
+  margin-top: var(--space-1);
+}

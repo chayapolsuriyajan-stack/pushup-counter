@@ -1,0 +1,25 @@
+.wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: rgba(10, 10, 12, 0.85);
+}
+
+.title {
+  font-family: var(--font-mono);
+  font-size: var(--text-label-md);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.group {
+  width: 100%;
+  max-width: 320px;
+}

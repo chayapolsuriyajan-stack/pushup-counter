@@ -1,0 +1,9 @@
+.content {
+  /* --section-padding is the horizontal gutter; it already scales from
+     32px to 80px at 1024px (see tokens.css) so no separate breakpoint is
+     needed here. */
+  padding: var(--space-3) var(--section-padding);
+  padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + var(--space-3));
+  max-width: 960px;
+  margin: 0 auto;
+}

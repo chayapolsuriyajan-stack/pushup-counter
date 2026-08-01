@@ -1,0 +1,91 @@
+/*
+ * Design tokens from the "System Interface" theme
+ * (system-interface-7-DESIGN.md), adapted for a phone-first camera app.
+ */
+:root {
+  /* ── Palette (DESIGN.md) ─────────────────────────────────────── */
+  --color-primary: #7a9f65;
+  --color-accent: #756a9f;
+  --color-background: #0a0a0c;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a1a1aa;
+  --color-border: #27272a;
+
+  /* ── DELIBERATE DEVIATION ────────────────────────────────────────
+     DESIGN.md declares `surface` identical to `primary` (#7A9F65).
+     Taken literally, every card becomes a solid olive block on a
+     near-black background: white text on #7A9F65 is 2.6:1 contrast
+     (fails WCAG AA), and the file's own "nested surfaces" guardrail
+     becomes impossible — a surface can't nest inside itself.
+     Interpretation used here: olive is the SURFACE ACCENT (edges,
+     rails, active fills, meters). Card fills are near-black, lifted
+     slightly off --color-background, preserving the dark dashboard
+     ground the rest of the theme describes. ───────────────────── */
+  --surface-accent: var(--color-primary);
+  --surface-1: #121215; /* card fill */
+  --surface-2: #17171b; /* nested row inside a card */
+  --surface-3: #1d1d22; /* pressed / active */
+  --on-accent: #0a0a0c; /* text on olive fills: 8.5:1, passes AA */
+
+  /* ── Type ────────────────────────────────────────────────────── */
+  --font-display: "Inter", system-ui, -apple-system, sans-serif;
+  --font-body: var(--font-display);
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --text-display-lg: 64px;
+  --lh-display-lg: 1.04;
+  --fw-display: 500;
+  --text-body-md: 16px;
+  --lh-body-md: 1.6;
+  --fw-body: 400;
+  --text-label-md: 12px;
+  --lh-label-md: 1.2;
+  --fw-label: 600;
+  --tracking-label: 0.04em;
+
+  /* Extension, not a deviation: the rep readout must stay legible from
+     the floor mid-push-up. 64px would be a functional regression from
+     the original app's min(28vw, 140px). */
+  --text-metric-xl: min(28vw, 140px);
+  --text-metric-lg: 40px;
+
+  /* ── Space / radius / motion ─────────────────────────────────── */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --gap: var(--space-2);
+  --card-padding: var(--space-3);
+  /* 80px is a desktop-marketing figure; on a 375px phone with a fixed
+     56px nav it eats a third of the viewport. Scaled responsively
+     across three tiers below rather than applied literally at every
+     width: tight on phones, the design system's own value in between,
+     full 80px only once there's actually room for it. */
+  --section-padding: var(--space-2);
+  --radius-card: 8px;
+  --radius-control: 8px;
+  --radius-pill: 9999px;
+  --nav-height: 56px;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --section-padding: var(--space-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --section-padding: 80px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+  }
+}
