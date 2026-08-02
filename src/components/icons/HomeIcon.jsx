@@ -1,4 +1,4 @@
-export default function HomeIcon({ size = 28, ...props }) {
+export default function HomeIcon({ size = 56, ...props }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
       <path

@@ -2,8 +2,8 @@
   display: flex;
   background: var(--surface-2);
   border-radius: var(--radius-control);
-  padding: 3px;
-  gap: 3px;
+  padding: 6px;
+  gap: 6px;
 }
 
 .option {
@@ -11,8 +11,8 @@
   border: none;
   background: transparent;
   color: var(--color-text-secondary);
-  padding: 14px 12px;
-  border-radius: calc(var(--radius-control) - 3px);
+  padding: 24px 20px;
+  border-radius: calc(var(--radius-control) - 6px);
   font-family: var(--font-mono);
   font-size: var(--text-label-md);
   font-weight: var(--fw-label);

@@ -32,14 +32,14 @@
   --font-body: var(--font-display);
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  --text-display-lg: 64px;
+  --text-display-lg: 128px;
   --lh-display-lg: 1.04;
   --fw-display: 500;
-  --text-page-title: 34px;
-  --text-body-md: 17px;
+  --text-page-title: 68px;
+  --text-body-md: 34px;
   --lh-body-md: 1.6;
   --fw-body: 400;
-  --text-label-md: 14px;
+  --text-label-md: 28px;
   --lh-label-md: 1.2;
   --fw-label: 600;
   --tracking-label: 0.04em;
@@ -48,13 +48,13 @@
      the floor mid-push-up. 64px would be a functional regression from
      the original app's min(28vw, 140px). */
   --text-metric-xl: min(28vw, 140px);
-  --text-metric-lg: 46px;
+  --text-metric-lg: 92px;
 
   /* ── Space / radius / motion ─────────────────────────────────── */
-  --space-1: 8px;
-  --space-2: 16px;
-  --space-3: 24px;
-  --space-4: 32px;
+  --space-1: 16px;
+  --space-2: 32px;
+  --space-3: 48px;
+  --space-4: 64px;
   --gap: var(--space-2);
   --card-padding: var(--space-4);
   /* 80px is a desktop-marketing figure; on a 375px phone with a fixed
@@ -63,10 +63,10 @@
      width: tight on phones, the design system's own value in between,
      full 80px only once there's actually room for it. */
   --section-padding: var(--space-2);
-  --radius-card: 8px;
-  --radius-control: 8px;
+  --radius-card: 16px;
+  --radius-control: 16px;
   --radius-pill: 9999px;
-  --nav-height: 76px;
+  --nav-height: 152px;
   --ease: cubic-bezier(0.2, 0, 0, 1);
   --dur-fast: 120ms;
   --dur-base: 200ms;

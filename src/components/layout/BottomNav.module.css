@@ -17,11 +17,16 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 8px;
   color: var(--color-text-secondary);
   text-decoration: none;
   font-family: var(--font-mono);
-  font-size: 15px;
+  /* Not literally 2x (15px -> 16px, not 30px): "Settings" at 20px+
+     monospace needs ~96px in a nav item that only has ~103px on a
+     412px-wide phone (4-way split) — a true doubling here guarantees
+     wrapping/overflow on real devices. Icon and pill are still doubled;
+     this is the one place raw 2x fights the fixed 4-column layout. */
+  font-size: 16px;
   font-weight: var(--fw-label);
 }
 
@@ -33,8 +38,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
-  height: 36px;
+  width: 88px;
+  height: 72px;
   border-radius: var(--radius-pill);
 }
 

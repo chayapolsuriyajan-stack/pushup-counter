@@ -9,8 +9,12 @@
 }
 
 .statsRow {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* Stacked, not 3-across: at 2x the metric number is 92px, and a
+     3-digit rep count at that size doesn't fit a third of even a wide
+     phone's width. Full-width per tile scales safely regardless of
+     digit count. */
+  display: flex;
+  flex-direction: column;
   gap: var(--space-2);
 }
 
