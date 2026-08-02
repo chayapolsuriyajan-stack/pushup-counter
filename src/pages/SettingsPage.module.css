@@ -21,7 +21,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
-  padding: var(--space-2);
+  padding: var(--space-3);
   background: var(--surface-2);
   border-radius: var(--radius-control);
 }
@@ -31,7 +31,7 @@
 }
 
 .rowLabel {
-  font-size: var(--text-body-md);
+  font-size: 18px;
 }
 
 .durationGroup {

@@ -25,7 +25,11 @@ h2,
 h3 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: var(--fw-display);
+  font-weight: 600;
+}
+
+h1 {
+  font-size: var(--text-page-title);
 }
 
 button,

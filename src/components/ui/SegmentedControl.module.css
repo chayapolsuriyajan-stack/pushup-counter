@@ -11,7 +11,7 @@
   border: none;
   background: transparent;
   color: var(--color-text-secondary);
-  padding: 10px 12px;
+  padding: 14px 12px;
   border-radius: calc(var(--radius-control) - 3px);
   font-family: var(--font-mono);
   font-size: var(--text-label-md);
