@@ -1,16 +1,19 @@
 .grid {
   display: grid;
-  grid-template-columns: 1fr;
+  /* Self-corrects on the actual rendered container width rather than
+     guessing from viewport width — a raw min-width breakpoint fired on
+     at least one real phone whose logical viewport was wider than
+     expected (display-size/zoom settings can do this), squeezing both
+     cards into an unreadably narrow half each. Each card only ever gets
+     a second column once there's genuinely at least 300px of room for
+     it, so it degrades to one column safely instead of assuming a
+     device class from its pixel width. */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: var(--gap);
 }
 
-@media (min-width: 640px) {
-  .grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  .full {
-    grid-column: 1 / -1;
-  }
+.full {
+  grid-column: 1 / -1;
 }
 
 .statsRow {
