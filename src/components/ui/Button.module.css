@@ -5,8 +5,8 @@
   gap: var(--space-1);
   border: none;
   border-radius: var(--radius-control);
-  padding: 14px var(--space-3);
-  font-size: 16px;
+  padding: 17px var(--space-3);
+  font-size: 17px;
   font-weight: 600;
   cursor: pointer;
   transition: transform var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease);

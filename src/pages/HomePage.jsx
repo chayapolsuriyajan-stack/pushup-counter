@@ -27,13 +27,13 @@ export default function HomePage() {
       </Button>
 
       <div className={s.grid} style={{ marginTop: "var(--space-3)" }}>
-        <div className={`${s.statsRow} ${s.full}`}>
+        <div className={s.statsRow}>
           <MetricTile value={today} label="Today" />
           <MetricTile value={best?.reps ?? 0} label="Best set" />
           <MetricTile value={streak} label="Day streak" />
         </div>
 
-        <Card className={hasAnyHistory ? "" : s.full}>
+        <Card>
           <div className={s.cardTitle}>Activity</div>
           {hasAnyHistory ? (
             <Heatmap repsByDay={heatmapData(store)} />

@@ -1,8 +1,8 @@
 import { buildHeatmapGrid } from "../../lib/dates.js";
 import s from "./Heatmap.module.css";
 
-const CELL = 11;
-const GUTTER = 3;
+const CELL = 15;
+const GUTTER = 4;
 const STEP = CELL + GUTTER;
 
 // Level relative to the max seen in this grid (not a fixed absolute
