@@ -13,7 +13,7 @@ describe("SignalCalibrator", () => {
     let t = 0;
     for (let frame = 0; frame < 200; frame++) {
       t += 33;
-      cal.update(60 + triangle(frame, 60) * (170 - 60), null, t);
+      cal.update({ angle: 60 + triangle(frame, 60) * (170 - 60) }, t);
     }
     expect(cal.locked).toBe(true);
     expect(cal.signal).toBe("angle");
@@ -24,7 +24,7 @@ describe("SignalCalibrator", () => {
     let t = 0;
     for (let frame = 0; frame < 200; frame++) {
       t += 33;
-      cal.update(null, 0.15 + triangle(frame, 60) * (0.35 - 0.15), t);
+      cal.update({ width: 0.15 + triangle(frame, 60) * (0.35 - 0.15) }, t);
     }
     expect(cal.locked).toBe(true);
     expect(cal.signal).toBe("width");
@@ -37,7 +37,7 @@ describe("SignalCalibrator", () => {
       t += 33;
       const angle = 120 + Math.sin(frame * 0.3) * 5; // ~10deg swing, under minSwingAngleDeg(40)
       const width = 0.2 + Math.sin(frame * 0.3) * 0.005; // under minSwingWidthFrac(0.02)
-      cal.update(angle, width, t);
+      cal.update({ angle, width }, t);
     }
     expect(cal.locked).toBe(false);
   });
@@ -49,10 +49,10 @@ describe("SignalCalibrator", () => {
       t += 33;
       let angle = 60 + triangle(frame, 60) * (170 - 60);
       if (frame === 90) angle = 5; // wild single-frame misdetection
-      cal.update(angle, null, t);
+      cal.update({ angle }, t);
     }
     expect(cal.locked).toBe(true);
-    expect(cal._angle.min).toBeGreaterThan(50);
+    expect(cal._tracks.get("angle").min).toBeGreaterThan(50);
   });
 
   it("picks the signal with the bigger observed swing", () => {
@@ -61,7 +61,7 @@ describe("SignalCalibrator", () => {
     for (let frame = 0; frame < 100; frame++) {
       t += 33;
       const tri = triangle(frame, 60);
-      cal.update(60 + tri * (170 - 60), 0.2 + tri * 0.05, t); // angle swings 110, width swings 0.05
+      cal.update({ angle: 60 + tri * (170 - 60), width: 0.2 + tri * 0.05 }, t); // angle swings 110, width swings 0.05
     }
     expect(cal.locked).toBe(true);
     expect(cal.signal).toBe("angle");
@@ -73,7 +73,7 @@ describe("SignalCalibrator", () => {
     let t = 0;
     for (let frame = 0; frame < 100; frame++) {
       t += 33;
-      cal.update(60 + triangle(frame, 60) * (170 - 60), null, t);
+      cal.update({ angle: 60 + triangle(frame, 60) * (170 - 60) }, t);
     }
     expect(cal.locked).toBe(true);
     expect(cal.signal).toBe("angle");
@@ -82,11 +82,37 @@ describe("SignalCalibrator", () => {
     expect(() => {
       for (let frame = 0; frame < 20; frame++) {
         t += 33;
-        cal.update(null, null, t); // arm occluded
-        counter.update(cal.position(null, null), t);
+        cal.update({ angle: null }, t); // arm occluded
+        counter.update(cal.position({ angle: null }), t);
       }
     }).not.toThrow();
-    expect(cal.position(null, null)).toBeNull();
+    expect(cal.position({ angle: null })).toBeNull();
+  });
+
+  it("with a forced signal, locks only onto that signal even if another would win the auto-race", () => {
+    const cal = new SignalCalibrator(CONFIG, "width");
+    let t = 0;
+    for (let frame = 0; frame < 100; frame++) {
+      t += 33;
+      const tri = triangle(frame, 60);
+      // angle swings much bigger (110) than width (0.05) — auto mode would pick angle.
+      cal.update({ angle: 60 + tri * (170 - 60), width: 0.2 + tri * 0.05 }, t);
+    }
+    expect(cal.locked).toBe(true);
+    expect(cal.signal).toBe("width");
+  });
+
+  it("respects the 3s warmup gate identically whether forced or auto", () => {
+    const cal = new SignalCalibrator(CONFIG, "angle");
+    let t = 0;
+    for (let frame = 0; frame < 200; frame++) {
+      t += 20; // 20ms/frame -> 4000ms total, but warmup check happens per-call
+      cal.update({ angle: 60 + triangle(frame, 60) * (170 - 60) }, t);
+      if (t < CONFIG.calibrationWarmupMs) {
+        expect(cal.locked).toBe(false);
+      }
+    }
+    expect(cal.locked).toBe(true);
   });
 });
 
@@ -100,12 +126,12 @@ describe("RepCounter + SignalCalibrator, full pipeline", () => {
     for (let frame = 0; frame < 400; frame++) {
       t += 33;
       const angle = 60 + triangle(frame, 60) * (170 - 60);
-      cal.update(angle, null, t);
+      cal.update({ angle }, t);
 
       if (cal.locked && !calibrationApplied) {
         calibrationApplied = true;
         counter.config = NORMALIZED_CONFIG;
-        const pos = cal.position(angle, null);
+        const pos = cal.position({ angle });
         if (pos != null) {
           if (pos < NORMALIZED_CONFIG.downEnter) counter.state = "DOWN";
           else if (pos > NORMALIZED_CONFIG.upEnter) counter.state = "UP";
@@ -113,7 +139,7 @@ describe("RepCounter + SignalCalibrator, full pipeline", () => {
       }
 
       if (cal.locked) {
-        counter.update(cal.position(angle, null), t);
+        counter.update(cal.position({ angle }), t);
       } else {
         counter.update(angle, t); // bootstrap path, raw CONFIG thresholds
       }

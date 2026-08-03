@@ -207,57 +207,80 @@ export function shoulderToHipVertical(landmarks, minVisibility) {
   return Math.abs(shoulderMidY - hipMidY);
 }
 
+// Order matters for auto-race tie-breaking: when two signals tie exactly on
+// observed swing, the first one in this list wins (mirrors the original
+// hardcoded "angle wins ties" behavior).
+export const SIGNAL_NAMES = ["angle", "width", "shoulderWrist", "noseY", "shoulderHip"];
+
+export const SIGNAL_DEFS = {
+  angle: { invert: false, minSwing: CONFIG.minSwingAngleDeg, maxJump: CONFIG.maxJumpAngleDeg },
+  width: { invert: true, minSwing: CONFIG.minSwingWidthFrac, maxJump: CONFIG.maxJumpWidthFrac },
+  shoulderWrist: {
+    invert: false,
+    minSwing: CONFIG.minSwingShoulderWristFrac,
+    maxJump: CONFIG.maxJumpShoulderWristFrac,
+  },
+  noseY: { invert: true, minSwing: CONFIG.minSwingNoseYFrac, maxJump: CONFIG.maxJumpNoseYFrac },
+  shoulderHip: {
+    invert: false,
+    minSwing: CONFIG.minSwingShoulderHipFrac,
+    maxJump: CONFIG.maxJumpShoulderHipFrac,
+  },
+};
+
 /**
- * Watches both the elbow-angle and shoulder-width signals, picks whichever
- * one shows a real range of motion, and calibrates its own min/max from
- * what it observes — so rep counting works whether the camera ends up
- * side-on (angle wins) or head-on (width wins), without any manual setup.
+ * Watches every candidate signal it's given and either (a) races them all
+ * and locks onto whichever shows a real range of motion first — the
+ * original "Auto" behavior — or (b) with a `forcedSignal`, calibrates only
+ * that one, ignoring how the others behave. Manual forcing exists so a
+ * single signal's real rep-counting accuracy can be tested in isolation,
+ * without the auto-race silently picking a different one.
  *
  * Locks onto a signal exactly once per session and never re-evaluates the
  * choice, so the bar/counter can't flicker between two different physical
  * quantities mid-set.
  */
 export class SignalCalibrator {
-  constructor(config = CONFIG) {
+  constructor(config = CONFIG, forcedSignal = null) {
     this.config = config;
+    this.forcedSignal = forcedSignal;
     this.locked = false;
-    this.signal = null; // "angle" | "width"
+    this.signal = null;
     this.startedAt = null;
-    this._angle = this._freshTrack();
-    this._width = this._freshTrack();
+    this._tracks = new Map(SIGNAL_NAMES.map((name) => [name, this._freshTrack()]));
   }
 
   _freshTrack() {
     return { ema: null, min: null, max: null };
   }
 
-  /** raw angle in degrees (or null), raw width 0..1 (or null), now = performance.now() */
-  update(angle, width, now) {
-    if (this.startedAt == null && (angle != null || width != null)) this.startedAt = now;
+  /** signals: { angle?, width?, shoulderWrist?, noseY?, shoulderHip? } — any subset, null/absent = not observed this frame. */
+  update(signals, now) {
+    const anyValue = SIGNAL_NAMES.some((name) => signals[name] != null);
+    if (this.startedAt == null && anyValue) this.startedAt = now;
 
     if (this.locked) {
-      const track = this.signal === "angle" ? this._angle : this._width;
-      const raw = this.signal === "angle" ? angle : width;
-      const maxJump = this.signal === "angle" ? this.config.maxJumpAngleDeg : this.config.maxJumpWidthFrac;
-      if (raw != null) this._observe(track, raw, maxJump);
+      const raw = signals[this.signal];
+      if (raw != null) {
+        this._observe(this._tracks.get(this.signal), raw, SIGNAL_DEFS[this.signal].maxJump);
+      }
       return;
     }
 
-    if (angle != null) this._observe(this._angle, angle, this.config.maxJumpAngleDeg);
-    if (width != null) this._observe(this._width, width, this.config.maxJumpWidthFrac);
+    const namesToObserve = this.forcedSignal ? [this.forcedSignal] : SIGNAL_NAMES;
+    for (const name of namesToObserve) {
+      const raw = signals[name];
+      if (raw != null) {
+        this._observe(this._tracks.get(name), raw, SIGNAL_DEFS[name].maxJump);
+      }
+    }
     this._maybeLockIn(now);
   }
 
   // Rejects a single-frame sample that jumps implausibly far from the last
-  // smoothed value (a wild landmark misdetection, not real motion — a real
-  // joint can't move that far in one ~33ms frame), then folds anything that
-  // survives into a light EMA before updating the running min/max. Because
-  // the outlier check happens on the raw sample *before* min/max ever sees
-  // it, min/max can just track the smoothed extremes directly: no separate
-  // "sustain for N frames" bookkeeping is needed, and — unlike an earlier
-  // version of this — a session that starts already at one extreme (e.g.
-  // arms extended, at rest, before the first push-up) doesn't get stuck
-  // waiting for confirmation that can never come once nothing beats it.
+  // smoothed value (a wild landmark misdetection, not real motion), then
+  // folds anything that survives into a light EMA before updating the
+  // running min/max.
   _observe(track, raw, maxJump) {
     if (track.ema != null && Math.abs(raw - track.ema) > maxJump) return;
     const alpha = this.config.calibrationEmaAlpha;
@@ -274,17 +297,25 @@ export class SignalCalibrator {
     if (this.startedAt == null) return;
     if (now - this.startedAt < this.config.calibrationWarmupMs) return;
 
-    const angleSwing = this._swing(this._angle);
-    const widthSwing = this._swing(this._width);
-    const angleReady = angleSwing >= this.config.minSwingAngleDeg;
-    const widthReady = widthSwing >= this.config.minSwingWidthFrac;
-    if (!angleReady && !widthReady) return;
-
-    if (angleReady && (!widthReady || angleSwing >= widthSwing)) {
-      this._lockIn("angle", this._angle);
-    } else {
-      this._lockIn("width", this._width);
+    if (this.forcedSignal) {
+      const track = this._tracks.get(this.forcedSignal);
+      if (this._swing(track) >= SIGNAL_DEFS[this.forcedSignal].minSwing) {
+        this._lockIn(this.forcedSignal, track);
+      }
+      return;
     }
+
+    let winner = null;
+    let winnerSwing = -1;
+    for (const name of SIGNAL_NAMES) {
+      const track = this._tracks.get(name);
+      const swing = this._swing(track);
+      if (swing >= SIGNAL_DEFS[name].minSwing && swing > winnerSwing) {
+        winner = name;
+        winnerSwing = swing;
+      }
+    }
+    if (winner) this._lockIn(winner, this._tracks.get(winner));
   }
 
   _lockIn(signal, track) {
@@ -296,12 +327,12 @@ export class SignalCalibrator {
   }
 
   /** Normalized position: 0 = bottom of calibrated range (down), 1 = top (up). null if not ready. */
-  position(angle, width) {
+  position(signals) {
     if (!this.locked) return null;
-    const track = this.signal === "angle" ? this._angle : this._width;
-    const raw = this.signal === "angle" ? angle : width;
+    const track = this._tracks.get(this.signal);
+    const raw = signals[this.signal];
     if (raw == null || track.min == null || track.max == null || track.max === track.min) return null;
     const frac = Math.min(1, Math.max(0, (raw - track.min) / (track.max - track.min)));
-    return this.signal === "angle" ? frac : 1 - frac; // width is inverted: large width = close = down
+    return SIGNAL_DEFS[this.signal].invert ? 1 - frac : frac;
   }
 }
