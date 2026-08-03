@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SignalCalibrator, RepCounter, CONFIG, NORMALIZED_CONFIG } from "./counter.js";
+import { SignalCalibrator, RepCounter, CONFIG, NORMALIZED_CONFIG, shoulderToWristVertical, noseVerticalPosition, shoulderToHipVertical } from "./counter.js";
 
 // Triangle wave helper: 0..1..0 over `period` frames.
 function triangle(frame, period) {
@@ -71,7 +71,7 @@ describe("SignalCalibrator", () => {
     const cal = new SignalCalibrator(CONFIG);
     const counter = new RepCounter(CONFIG);
     let t = 0;
-    for (let frame = 0; frame < 60; frame++) {
+    for (let frame = 0; frame < 100; frame++) {
       t += 33;
       cal.update(60 + triangle(frame, 60) * (170 - 60), null, t);
     }
@@ -121,5 +121,64 @@ describe("RepCounter + SignalCalibrator, full pipeline", () => {
 
     // ~400 frames at 33ms/60-frame period ≈ 6.6 reps of motion.
     expect(counter.reps).toBeGreaterThanOrEqual(5);
+  });
+});
+
+describe("shoulderToWristVertical", () => {
+  it("returns the vertical distance for the more-visible side", () => {
+    const landmarks = [];
+    landmarks[11] = { x: 0.4, y: 0.3, visibility: 0.9 }; // left shoulder
+    landmarks[15] = { x: 0.35, y: 0.6, visibility: 0.9 }; // left wrist
+    landmarks[12] = { x: 0.6, y: 0.3, visibility: 0.1 }; // right shoulder (occluded)
+    landmarks[16] = { x: 0.65, y: 0.6, visibility: 0.1 }; // right wrist (occluded)
+    expect(shoulderToWristVertical(landmarks, 0.6)).toBeCloseTo(0.3, 5);
+  });
+
+  it("returns null when neither side is visible enough", () => {
+    const landmarks = [];
+    landmarks[11] = { x: 0.4, y: 0.3, visibility: 0.2 };
+    landmarks[15] = { x: 0.35, y: 0.6, visibility: 0.2 };
+    landmarks[12] = { x: 0.6, y: 0.3, visibility: 0.1 };
+    landmarks[16] = { x: 0.65, y: 0.6, visibility: 0.1 };
+    expect(shoulderToWristVertical(landmarks, 0.6)).toBeNull();
+  });
+});
+
+describe("noseVerticalPosition", () => {
+  it("returns the nose landmark's y coordinate", () => {
+    const landmarks = [];
+    landmarks[0] = { x: 0.5, y: 0.22, visibility: 0.95 };
+    expect(noseVerticalPosition(landmarks, 0.6)).toBeCloseTo(0.22, 5);
+  });
+
+  it("returns null when the nose is below the visibility threshold", () => {
+    const landmarks = [];
+    landmarks[0] = { x: 0.5, y: 0.22, visibility: 0.3 };
+    expect(noseVerticalPosition(landmarks, 0.6)).toBeNull();
+  });
+
+  it("returns null when the nose landmark is missing", () => {
+    expect(noseVerticalPosition([], 0.6)).toBeNull();
+  });
+});
+
+describe("shoulderToHipVertical", () => {
+  it("returns the vertical distance between shoulder and hip midpoints", () => {
+    const landmarks = [];
+    landmarks[11] = { x: 0.4, y: 0.3, visibility: 0.9 };
+    landmarks[12] = { x: 0.6, y: 0.32, visibility: 0.9 };
+    landmarks[23] = { x: 0.42, y: 0.7, visibility: 0.9 };
+    landmarks[24] = { x: 0.58, y: 0.72, visibility: 0.9 };
+    // shoulderMidY = 0.31, hipMidY = 0.71
+    expect(shoulderToHipVertical(landmarks, 0.6)).toBeCloseTo(0.4, 5);
+  });
+
+  it("returns null when any of the four landmarks is below the visibility threshold", () => {
+    const landmarks = [];
+    landmarks[11] = { x: 0.4, y: 0.3, visibility: 0.9 };
+    landmarks[12] = { x: 0.6, y: 0.32, visibility: 0.9 };
+    landmarks[23] = { x: 0.42, y: 0.7, visibility: 0.1 }; // occluded hip
+    landmarks[24] = { x: 0.58, y: 0.72, visibility: 0.9 };
+    expect(shoulderToHipVertical(landmarks, 0.6)).toBeNull();
   });
 });

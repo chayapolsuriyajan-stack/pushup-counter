@@ -9,10 +9,19 @@ export const CONFIG = {
   // SignalCalibrator tuning — see that class below.
   minSwingAngleDeg: 40,        // min observed elbow-angle swing before it can be trusted
   minSwingWidthFrac: 0.02,     // min observed shoulder-width swing before it can be trusted
-  calibrationWarmupMs: 500,    // ignore lock-in decisions before this much data is buffered
+  minSwingShoulderWristFrac: 0.03, // min observed shoulder-to-wrist swing before it can be trusted
+  minSwingNoseYFrac: 0.02,         // min observed nose-Y swing before it can be trusted
+  minSwingShoulderHipFrac: 0.02,   // min observed shoulder-to-hip swing before it can be trusted
+  // 3s, not the original 500ms: 500ms was barely enough time to prop the
+  // phone up, let alone get into position, so the calibrator could lock
+  // onto pure setup-fumbling jitter before any real motion happened.
+  calibrationWarmupMs: 3000,
   calibrationEmaAlpha: 0.25,   // smoothing factor for ordinary per-frame landmark jitter
   maxJumpAngleDeg: 60,         // reject a single-frame angle sample that jumps more than this
   maxJumpWidthFrac: 0.15,      // reject a single-frame width sample that jumps more than this
+  maxJumpShoulderWristFrac: 0.2,   // reject a single-frame shoulder-wrist sample that jumps more than this
+  maxJumpNoseYFrac: 0.15,          // reject a single-frame nose-Y sample that jumps more than this
+  maxJumpShoulderHipFrac: 0.15,    // reject a single-frame shoulder-hip sample that jumps more than this
 };
 
 // Thresholds for the post-calibration phase, once a signal has been
@@ -124,6 +133,76 @@ export function apparentShoulderWidth(landmarks, minVisibility) {
     return null;
   }
   return Math.hypot(l.x - r.x, l.y - r.y);
+}
+
+/**
+ * Alternative signal: vertical (image-Y) distance between shoulder and
+ * wrist on whichever arm is more visible. The wrist stays planted on the
+ * ground through a push-up while the shoulder rises and falls with the
+ * elbow bend, so this is a direct 2D vertical motion rather than an
+ * apparent-size/depth cue — a different failure mode than shoulder-width.
+ * Assumed polarity: larger = arm more extended = "up". Unverified without
+ * real footage; if this turns out backwards, flip the `invert` flag for
+ * "shoulderWrist" in SIGNAL_DEFS below.
+ */
+export function shoulderToWristVertical(landmarks, minVisibility) {
+  const sides = [
+    { shoulder: 11, wrist: 15 }, // left
+    { shoulder: 12, wrist: 16 }, // right
+  ];
+  let best = null;
+  let bestVis = -1;
+  for (const side of sides) {
+    const vis = landmarks[side.wrist]?.visibility ?? 0;
+    if (vis > bestVis) {
+      bestVis = vis;
+      best = side;
+    }
+  }
+  if (!best || bestVis < minVisibility) return null;
+  const shoulder = landmarks[best.shoulder];
+  const wrist = landmarks[best.wrist];
+  if (!shoulder || !wrist) return null;
+  return Math.abs(shoulder.y - wrist.y);
+}
+
+/**
+ * Alternative signal: vertical (image-Y) position of the nose. Isolates
+ * just the up/down component of head motion during a push-up, with no
+ * angle math or depth estimation involved.
+ * Assumed polarity: unverified — see SIGNAL_DEFS below for the current guess.
+ */
+export function noseVerticalPosition(landmarks, minVisibility) {
+  const nose = landmarks[0];
+  if (!nose) return null;
+  if (minVisibility != null && (nose.visibility ?? 0) < minVisibility) return null;
+  return nose.y;
+}
+
+/**
+ * Diagnostic signal, not really a rep-counting candidate: vertical distance
+ * between shoulder and hip midpoints. In a strict plank push-up this
+ * shouldn't change much (the torso stays rigid), so a big swing here says
+ * more about form (sagging/piking) than about rep count.
+ */
+export function shoulderToHipVertical(landmarks, minVisibility) {
+  const ls = landmarks[11];
+  const rs = landmarks[12];
+  const lh = landmarks[23];
+  const rh = landmarks[24];
+  if (!ls || !rs || !lh || !rh) return null;
+  if (
+    minVisibility != null &&
+    ((ls.visibility ?? 0) < minVisibility ||
+      (rs.visibility ?? 0) < minVisibility ||
+      (lh.visibility ?? 0) < minVisibility ||
+      (rh.visibility ?? 0) < minVisibility)
+  ) {
+    return null;
+  }
+  const shoulderMidY = (ls.y + rs.y) / 2;
+  const hipMidY = (lh.y + rh.y) / 2;
+  return Math.abs(shoulderMidY - hipMidY);
 }
 
 /**
