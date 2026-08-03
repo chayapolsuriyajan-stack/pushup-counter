@@ -18,7 +18,12 @@ export default function PushupSessionPage() {
   const [targetSec, setTargetSec] = useState(store.settings.countdownSec);
   const [justRecorded, setJustRecorded] = useState(null); // {summary, isBest} — set once per finished summary
 
-  const session = usePoseSession({ mode, targetSec, vibrationEnabled: store.settings.vibration });
+  const session = usePoseSession({
+    mode,
+    targetSec,
+    vibrationEnabled: store.settings.vibration,
+    signalSource: store.settings.signalSource,
+  });
 
   // Persist exactly once per finished set, in an effect rather than during
   // render — recordSet is a real side effect (localStorage write + context

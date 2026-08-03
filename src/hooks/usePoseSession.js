@@ -16,6 +16,9 @@ import {
   jointAngle,
   pickVisibleArm,
   apparentShoulderWidth,
+  shoulderToWristVertical,
+  noseVerticalPosition,
+  shoulderToHipVertical,
 } from "../lib/counter.js";
 import { requestWakeLock, releaseWakeLock } from "./useWakeLock.js";
 
@@ -50,7 +53,12 @@ function vibrate(ms) {
  * re-trigger the setup effect — if it did, the camera would tear down and
  * restart in a loop the instant it finished starting.
  */
-export function usePoseSession({ mode = "free", targetSec = 60, vibrationEnabled = true } = {}) {
+export function usePoseSession({
+  mode = "free",
+  targetSec = 60,
+  vibrationEnabled = true,
+  signalSource = "auto",
+} = {}) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const repRef = useRef(null); // DOM node showing the live count — written directly, not via state
@@ -64,7 +72,7 @@ export function usePoseSession({ mode = "free", targetSec = 60, vibrationEnabled
   const rafRef = useRef(0);
   const wakeLockRef = useRef(null);
   const counterRef = useRef(new RepCounter(CONFIG));
-  const calibratorRef = useRef(new SignalCalibrator(CONFIG));
+  const calibratorRef = useRef(new SignalCalibrator(CONFIG, signalSource === "auto" ? null : signalSource));
   const calibrationAppliedRef = useRef(false);
   const trackHeightRef = useRef(0);
   const cancelledRef = useRef(false);
@@ -74,6 +82,8 @@ export function usePoseSession({ mode = "free", targetSec = 60, vibrationEnabled
   const cleanupListenersRef = useRef(() => {});
   const settingsRef = useRef({ vibrationEnabled });
   settingsRef.current.vibrationEnabled = vibrationEnabled;
+  const signalSourceRef = useRef(signalSource);
+  signalSourceRef.current = signalSource;
 
   const [active, setActive] = useState(false); // drives the camera-lifecycle effect
   const [phase, setPhase] = useState("idle"); // idle | starting | running | finished | error — display only
@@ -92,7 +102,8 @@ export function usePoseSession({ mode = "free", targetSec = 60, vibrationEnabled
   const start = useCallback(() => {
     vibrate(1);
     counterRef.current = new RepCounter(CONFIG);
-    calibratorRef.current = new SignalCalibrator(CONFIG);
+    const forcedSignal = signalSourceRef.current === "auto" ? null : signalSourceRef.current;
+    calibratorRef.current = new SignalCalibrator(CONFIG, forcedSignal);
     calibrationAppliedRef.current = false;
     setCalibrationSignal(null);
     setSummary(null);
@@ -273,10 +284,14 @@ export function usePoseSession({ mode = "free", targetSec = 60, vibrationEnabled
           const width = apparentShoulderWidth(landmarks, CONFIG.minVisibility);
           const arm = pickVisibleArm(result.worldLandmarks[0], landmarks, CONFIG.minVisibility);
           const angle = arm ? jointAngle(arm.shoulder, arm.elbow, arm.wrist) : null;
+          const shoulderWrist = shoulderToWristVertical(landmarks, CONFIG.minVisibility);
+          const noseY = noseVerticalPosition(landmarks, CONFIG.minVisibility);
+          const shoulderHip = shoulderToHipVertical(landmarks, CONFIG.minVisibility);
+          const signals = { angle, width, shoulderWrist, noseY, shoulderHip };
 
           const calibrator = calibratorRef.current;
           const counter = counterRef.current;
-          calibrator.update(angle, width, now);
+          calibrator.update(signals, now);
 
           if (calibrator.locked) {
             if (!calibrationAppliedRef.current) {
@@ -287,21 +302,23 @@ export function usePoseSession({ mode = "free", targetSec = 60, vibrationEnabled
               // Re-sync state to the CURRENT reading so switching
               // measurement basis never fires a phantom rep or eats a real
               // one at the exact instant of lock-in.
-              const initialPos = calibrator.position(angle, width);
+              const initialPos = calibrator.position(signals);
               if (initialPos != null) {
                 if (initialPos < NORMALIZED_CONFIG.downEnter) counter.state = "DOWN";
                 else if (initialPos > NORMALIZED_CONFIG.upEnter) counter.state = "UP";
               }
             }
 
-            const position = calibrator.position(angle, width);
+            const position = calibrator.position(signals);
             const before = counter.reps;
             counter.update(position, now);
             registerRep(before, now);
             updateBarDot(position);
-          } else if (angle != null) {
+          } else if (angle != null && signalSourceRef.current === "auto") {
             // Bootstrap safety net: raw angle against original CONFIG, so
             // counting never stalls while enough data is still gathered.
+            // Only in auto mode — a forced-signal test run must reflect
+            // ONLY that signal's counts, or the comparison is meaningless.
             const before = counter.reps;
             counter.update(angle, now);
             registerRep(before, now);

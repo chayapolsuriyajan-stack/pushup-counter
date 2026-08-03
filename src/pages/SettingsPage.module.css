@@ -37,3 +37,16 @@
 .durationGroup {
   margin-top: var(--space-1);
 }
+
+.signalList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.signalOption {
+  all: unset;
+  display: block;
+  cursor: pointer;
+  width: 100%;
+}

@@ -1,5 +1,13 @@
 import s from "./CalibrationBar.module.css";
 
+const SIGNAL_LABELS = {
+  angle: "elbow",
+  width: "shoulder-width",
+  shoulderWrist: "shoulder-to-wrist",
+  noseY: "nose position",
+  shoulderHip: "shoulder-to-hip",
+};
+
 export default function CalibrationBar({ trackRef, dotRef, zoneStyle, calibrationSignal }) {
   const visible = calibrationSignal != null;
   return (
@@ -9,9 +17,7 @@ export default function CalibrationBar({ trackRef, dotRef, zoneStyle, calibratio
         <div className={`${s.zone} ${s.zoneDown}`} />
         <div ref={dotRef} className={s.dot} />
       </div>
-      <div className={s.label}>
-        tracking: {calibrationSignal === "angle" ? "elbow" : calibrationSignal === "width" ? "shoulder-width" : ""}
-      </div>
+      <div className={s.label}>tracking: {SIGNAL_LABELS[calibrationSignal] ?? ""}</div>
     </div>
   );
 }
