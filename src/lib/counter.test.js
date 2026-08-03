@@ -142,6 +142,15 @@ describe("shoulderToWristVertical", () => {
     landmarks[16] = { x: 0.65, y: 0.6, visibility: 0.1 };
     expect(shoulderToWristVertical(landmarks, 0.6)).toBeNull();
   });
+
+  it("returns null when the wrist is visible but the paired shoulder is not", () => {
+    const landmarks = [];
+    landmarks[11] = { x: 0.4, y: 0.3, visibility: 0.2 }; // left shoulder occluded
+    landmarks[15] = { x: 0.35, y: 0.6, visibility: 0.9 }; // left wrist clearly visible
+    landmarks[12] = { x: 0.6, y: 0.3, visibility: 0.1 }; // right shoulder occluded
+    landmarks[16] = { x: 0.65, y: 0.6, visibility: 0.1 }; // right wrist occluded
+    expect(shoulderToWristVertical(landmarks, 0.6)).toBeNull();
+  });
 });
 
 describe("noseVerticalPosition", () => {

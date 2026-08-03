@@ -153,7 +153,9 @@ export function shoulderToWristVertical(landmarks, minVisibility) {
   let best = null;
   let bestVis = -1;
   for (const side of sides) {
-    const vis = landmarks[side.wrist]?.visibility ?? 0;
+    const shoulderVis = landmarks[side.shoulder]?.visibility ?? 0;
+    const wristVis = landmarks[side.wrist]?.visibility ?? 0;
+    const vis = Math.min(shoulderVis, wristVis);
     if (vis > bestVis) {
       bestVis = vis;
       best = side;
