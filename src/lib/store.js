@@ -6,7 +6,12 @@ import { dayKey, addDays } from "./dates.js";
 const KEY_V2 = "pushup-counter/v2";
 const KEY_V1 = "pushup-counter/v1"; // never deleted — the only rollback with no export
 
-const DEFAULT_SETTINGS = { countdownEnabled: false, countdownSec: 60, vibration: true };
+const DEFAULT_SETTINGS = {
+  countdownEnabled: false,
+  countdownSec: 60,
+  vibration: true,
+  signalSource: "auto",
+};
 
 function emptyStore() {
   return { version: 2, sets: [], legacyDays: [], settings: { ...DEFAULT_SETTINGS } };

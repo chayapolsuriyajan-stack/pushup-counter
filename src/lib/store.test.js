@@ -46,6 +46,17 @@ describe("migrate", () => {
     const store = migrate("{not valid json", rawV1);
     expect(store.legacyDays).toEqual([{ date: "2026-07-15", reps: 12 }]);
   });
+
+  it("fills in signalSource: \"auto\" as the default for settings missing it", () => {
+    const v2 = {
+      version: 2,
+      sets: [],
+      legacyDays: [],
+      settings: { countdownEnabled: false, countdownSec: 60, vibration: true },
+    };
+    const store = migrate(JSON.stringify(v2), null);
+    expect(store.settings.signalSource).toBe("auto");
+  });
 });
 
 describe("dayTotals / currentStreak / bestSet", () => {
