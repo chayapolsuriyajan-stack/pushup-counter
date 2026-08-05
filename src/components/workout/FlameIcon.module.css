@@ -1,0 +1,80 @@
+/*
+ * Baseline (escalating) state is driven entirely by the --flame-t custom
+ * property (0..1, written imperatively — see usePoseSession.js). It's read
+ * inside calc() by ordinary properties (transform, filter, opacity), so
+ * transitioning those properties smoothly animates the escalation across
+ * rep updates without needing @property registration.
+ *
+ * The per-rep burst lives on the INNER .svg/.hot layers, never on this
+ * outer .flame node — keeping burst and baseline on separate elements
+ * means their transforms/filters compose instead of one clobbering the
+ * other's `transform`/`filter` value on every rep.
+ */
+.flame {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: scale(calc(0.65 + 0.35 * var(--flame-t)));
+  filter: drop-shadow(
+    0 0 calc(3px + 11px * var(--flame-t)) rgba(255, 138, 61, calc(0.25 + 0.55 * var(--flame-t)))
+  );
+  transition:
+    transform var(--dur-base) var(--ease),
+    filter var(--dur-base) var(--ease);
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+}
+
+.base {
+  fill: #c9481c;
+}
+
+.hot {
+  fill: #ffce54;
+  opacity: var(--flame-t);
+  transition: opacity var(--dur-base) var(--ease);
+}
+
+@keyframes flameBurst {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes flameHotFlash {
+  0% {
+    filter: brightness(1);
+  }
+  30% {
+    filter: brightness(1.7);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+.flame[data-burst="1"] .svg {
+  animation: flameBurst 360ms var(--ease);
+}
+
+.flame[data-burst="1"] .hot {
+  animation: flameHotFlash 360ms var(--ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flame[data-burst="1"] .svg,
+  .flame[data-burst="1"] .hot {
+    animation: none;
+  }
+}

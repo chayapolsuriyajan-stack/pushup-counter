@@ -65,6 +65,7 @@ export function usePoseSession({
   const trackRef = useRef(null); // calibration bar track, for measuring height
   const dotRef = useRef(null); // calibration bar dot — position written directly
   const timeLeftRef = useRef(null); // countdown text node — written directly, same reasoning as repRef
+  const flameRef = useRef(null); // streak-flame icon — --flame-t/data-burst written directly, same reasoning as repRef
 
   const streamRef = useRef(null);
   const landmarkerRef = useRef(null);
@@ -111,6 +112,10 @@ export function usePoseSession({
     if (repRef.current) repRef.current.textContent = "0";
     if (timeLeftRef.current) timeLeftRef.current.textContent = formatSeconds(targetSec);
     if (dotRef.current) dotRef.current.style.transform = "translate(-50%, 0px)";
+    if (flameRef.current) {
+      flameRef.current.style.setProperty("--flame-t", 0);
+      flameRef.current.removeAttribute("data-burst");
+    }
     setPhase("starting");
     setActive(true);
   }, [targetSec]);
@@ -145,7 +150,17 @@ export function usePoseSession({
   const registerRep = useCallback(
     (before, now) => {
       if (counterRef.current.reps > before) {
-        if (repRef.current) repRef.current.textContent = String(counterRef.current.reps);
+        const reps = counterRef.current.reps;
+        if (repRef.current) repRef.current.textContent = String(reps);
+        if (flameRef.current) {
+          flameRef.current.style.setProperty("--flame-t", Math.min(1, reps / 20));
+          // Remove -> reflow -> re-add so the @keyframes burst restarts even
+          // on back-to-back reps, where the attribute would otherwise be set
+          // to the same value twice and never retrigger.
+          flameRef.current.removeAttribute("data-burst");
+          void flameRef.current.offsetWidth;
+          flameRef.current.setAttribute("data-burst", "1");
+        }
         vibrateIfEnabled(60);
       }
       if (mode === "timed" && deadlineRef.current != null && now >= deadlineRef.current) {
@@ -179,6 +194,7 @@ export function usePoseSession({
   useEffect(() => {
     if (repRef.current) repRef.current.textContent = "0";
     if (timeLeftRef.current) timeLeftRef.current.textContent = formatSeconds(targetSec);
+    if (flameRef.current) flameRef.current.style.setProperty("--flame-t", 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -361,6 +377,7 @@ export function usePoseSession({
     trackRef,
     dotRef,
     timeLeftRef,
+    flameRef,
     phase,
     errorMessage,
     calibrationSignal,

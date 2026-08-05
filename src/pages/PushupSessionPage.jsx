@@ -84,7 +84,13 @@ export default function PushupSessionPage() {
         />
       )}
 
-      <SessionHud repRef={session.repRef} timeLeftRef={session.timeLeftRef} mode={mode} onFinish={session.finish} />
+      <SessionHud
+        repRef={session.repRef}
+        timeLeftRef={session.timeLeftRef}
+        flameRef={session.flameRef}
+        mode={mode}
+        onFinish={session.finish}
+      />
     </div>
   );
 }
