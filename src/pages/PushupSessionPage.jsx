@@ -8,6 +8,7 @@ import CalibrationBar from "../components/workout/CalibrationBar.jsx";
 import CountdownPicker from "../components/workout/CountdownPicker.jsx";
 import SessionHud from "../components/workout/SessionHud.jsx";
 import SetSummary from "../components/workout/SetSummary.jsx";
+import FlameIcon from "../components/workout/FlameIcon.jsx";
 import hudStyles from "../components/workout/SessionHud.module.css";
 import s from "./PushupSessionPage.module.css";
 
@@ -56,6 +57,9 @@ export default function PushupSessionPage() {
       </button>
 
       <CameraStage videoRef={session.videoRef} canvasRef={session.canvasRef} />
+      <div className={s.flameOverlay}>
+        <FlameIcon ref={session.flameRef} />
+      </div>
       <CalibrationBar
         trackRef={session.trackRef}
         dotRef={session.dotRef}
@@ -87,7 +91,6 @@ export default function PushupSessionPage() {
       <SessionHud
         repRef={session.repRef}
         timeLeftRef={session.timeLeftRef}
-        flameRef={session.flameRef}
         mode={mode}
         onFinish={session.finish}
       />

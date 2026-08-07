@@ -11,8 +11,8 @@
  * other's `transform`/`filter` value on every rep.
  */
 .flame {
-  width: 40px;
-  height: 40px;
+  width: 96px;
+  height: 96px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -45,7 +45,7 @@
     transform: scale(1);
   }
   30% {
-    transform: scale(1.18);
+    transform: scale(1.32);
   }
   100% {
     transform: scale(1);
@@ -57,7 +57,7 @@
     filter: brightness(1);
   }
   30% {
-    filter: brightness(1.7);
+    filter: brightness(1.9);
   }
   100% {
     filter: brightness(1);
@@ -65,11 +65,11 @@
 }
 
 .flame[data-burst="1"] .svg {
-  animation: flameBurst 360ms var(--ease);
+  animation: flameBurst 420ms var(--ease);
 }
 
 .flame[data-burst="1"] .hot {
-  animation: flameHotFlash 360ms var(--ease);
+  animation: flameHotFlash 420ms var(--ease);
 }
 
 @media (prefers-reduced-motion: reduce) {
