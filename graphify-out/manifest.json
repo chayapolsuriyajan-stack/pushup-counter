@@ -1,232 +1,252 @@
 {
   "index.html": {
-    "mtime": 1785565787.1735375,
-    "ast_hash": "6a2bb5a2fecde2ec2018edffd9a6e76f",
+    "mtime": 1785567994.3807905,
+    "ast_hash": "dc45dd3b1a7ecc18f0443f2fdc9cde13",
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1785565661.9534163,
-    "ast_hash": "289a0d914460856c554675a78d9ac2c3",
+    "mtime": 1785567994.381791,
+    "ast_hash": "ac86525ec6eea72cde776564d4fb0cac",
     "semantic_hash": ""
   },
   "scripts/copy-mediapipe-wasm.mjs": {
-    "mtime": 1785565730.6329875,
-    "ast_hash": "727c151735858e1475b83913ed5c2d9a",
+    "mtime": 1785567994.381791,
+    "ast_hash": "262ce7eb5548cbc192b22cdb49a47c21",
     "semantic_hash": ""
   },
   "src/App.jsx": {
-    "mtime": 1785566258.5332775,
-    "ast_hash": "dc889a5e88e74a503734486c68c169c0",
+    "mtime": 1785567994.381791,
+    "ast_hash": "e186467feb471c8c9458d155aa35dc4d",
     "semantic_hash": ""
   },
   "src/components/charts/Heatmap.jsx": {
-    "mtime": 1785567265.3750906,
-    "ast_hash": "3942442e90b0bb08898f8fdca7c6d117",
+    "mtime": 1785675113.4302428,
+    "ast_hash": "1d14e0f16de75575d220bdd7f1c4ddc2",
     "semantic_hash": ""
   },
   "src/components/charts/LineChart.jsx": {
-    "mtime": 1785567283.7372105,
-    "ast_hash": "0183b26e828007f2224380d65b81359a",
+    "mtime": 1785567994.3827908,
+    "ast_hash": "7ab6017503f73aad928e069d7c580515",
     "semantic_hash": ""
   },
   "src/components/icons/HistoryIcon.jsx": {
-    "mtime": 1785566071.6698687,
-    "ast_hash": "5fe3477a99e6be3ea95d8f34f68065d1",
+    "mtime": 1785676133.9772558,
+    "ast_hash": "9b85630bae37ffdc51938485f347470c",
     "semantic_hash": ""
   },
   "src/components/icons/HomeIcon.jsx": {
-    "mtime": 1785566054.7368493,
-    "ast_hash": "9896ba6d5fbec996162362e855f5a3b2",
+    "mtime": 1785676120.0034337,
+    "ast_hash": "19f72db64ebba72c18e000401bdf37af",
     "semantic_hash": ""
   },
   "src/components/icons/SettingsIcon.jsx": {
-    "mtime": 1785566079.787574,
-    "ast_hash": "5a81e7a6e89f47a23655f4afb84865ed",
+    "mtime": 1785676140.25141,
+    "ast_hash": "24695d66fe9cbbdf3d928226581cf720",
     "semantic_hash": ""
   },
   "src/components/icons/WorkoutIcon.jsx": {
-    "mtime": 1785566064.6689396,
-    "ast_hash": "ee513592927b51347bc8ec27377ef5ff",
+    "mtime": 1785676127.0273008,
+    "ast_hash": "5594f550a2c2c64dd654e97fdfb30bf0",
     "semantic_hash": ""
   },
   "src/components/layout/AppShell.jsx": {
-    "mtime": 1785566233.5608945,
-    "ast_hash": "a2d18670bc3bb8e87ed20c4e74b734e4",
+    "mtime": 1785567994.3837905,
+    "ast_hash": "f3326bc5fb45e947ace0095e0c50f167",
     "semantic_hash": ""
   },
   "src/components/layout/BottomNav.jsx": {
-    "mtime": 1785566219.7093935,
-    "ast_hash": "137b0ba67b0d13b7ce5211cb5bca6ea2",
+    "mtime": 1785567994.3837905,
+    "ast_hash": "1ef2333da880e6ccf1dd1f25958bbede",
     "semantic_hash": ""
   },
   "src/components/ui/Button.jsx": {
-    "mtime": 1785566129.516682,
-    "ast_hash": "777e01713b16f381aafc5c9eb750e014",
+    "mtime": 1785567994.3837905,
+    "ast_hash": "993a98b5d106a7583341403e86556c5a",
     "semantic_hash": ""
   },
   "src/components/ui/Card.jsx": {
-    "mtime": 1785566092.2040455,
-    "ast_hash": "36f6cfa7d94296e7d5a7123a5252651c",
+    "mtime": 1785567994.3847904,
+    "ast_hash": "af7286f48fa930139498f9562ac9fdc8",
     "semantic_hash": ""
   },
   "src/components/ui/EmptyState.jsx": {
-    "mtime": 1785566182.3778858,
-    "ast_hash": "bad5d93fe796674080fb7026b2872e78",
+    "mtime": 1785567994.3852978,
+    "ast_hash": "2fdcce3b033d14ec9e94b426cf38d6da",
     "semantic_hash": ""
   },
   "src/components/ui/ListRow.jsx": {
-    "mtime": 1785566144.2920177,
-    "ast_hash": "bc189ca5aae95bcc8597089b574334d3",
+    "mtime": 1785567994.3852978,
+    "ast_hash": "de9862881097300406cea1f6c91d5362",
     "semantic_hash": ""
   },
   "src/components/ui/MetricTile.jsx": {
-    "mtime": 1785566112.3836806,
-    "ast_hash": "7da6412823c03343a40fee5ab0c4f041",
+    "mtime": 1785567994.3852978,
+    "ast_hash": "82826978928e4e9dc9c5a1a462ef2a67",
     "semantic_hash": ""
   },
   "src/components/ui/SegmentedControl.jsx": {
-    "mtime": 1785566169.9074845,
-    "ast_hash": "466770de20d2e5a2a937cc1142cd0bb4",
+    "mtime": 1785567994.3852978,
+    "ast_hash": "67c578fe80a089bbfa777c87b0725c1c",
     "semantic_hash": ""
   },
   "src/components/ui/Toggle.jsx": {
-    "mtime": 1785566155.8678577,
-    "ast_hash": "aff2f2e2168d9f7f1720c2123396f6e5",
+    "mtime": 1785567994.3863008,
+    "ast_hash": "0ea8d2b7b860af3bb7303a868891b1cd",
     "semantic_hash": ""
   },
   "src/components/workout/CalibrationBar.jsx": {
-    "mtime": 1785566777.9964623,
-    "ast_hash": "8e31d768ee3e810a6cb17a25852dc7ea",
+    "mtime": 1785727615.4455698,
+    "ast_hash": "394792d78bb4aba2b329c022c4e4d649",
     "semantic_hash": ""
   },
   "src/components/workout/CameraStage.jsx": {
-    "mtime": 1785566793.9046633,
-    "ast_hash": "cb2822d053c5bb821a6c909e80711f07",
+    "mtime": 1785567994.3863008,
+    "ast_hash": "abb4c5db4c9fedd06313f76dda0e4073",
     "semantic_hash": ""
   },
   "src/components/workout/CountdownPicker.jsx": {
-    "mtime": 1785566909.211797,
-    "ast_hash": "6438af51702dd6a9b57df0e91f67c81a",
+    "mtime": 1785567994.3863008,
+    "ast_hash": "b1b723e51ff3b3700f9600f0a36b3bf5",
     "semantic_hash": ""
   },
   "src/components/workout/LiveText.jsx": {
-    "mtime": 1785566743.2757483,
-    "ast_hash": "87358a4ef7b71666e9397e31b2020bcc",
+    "mtime": 1785567994.3863008,
+    "ast_hash": "a91b6824b724e2d966e463465d5b98ae",
     "semantic_hash": ""
   },
   "src/components/workout/SessionHud.jsx": {
-    "mtime": 1785566833.0649087,
-    "ast_hash": "3c47b88544f64b54f593490fe012db24",
+    "mtime": 1785897725.8021545,
+    "ast_hash": "2ecbe2e4a1f4dd15c6c22b9713a33a00",
     "semantic_hash": ""
   },
   "src/components/workout/SetSummary.jsx": {
-    "mtime": 1785566886.913239,
-    "ast_hash": "37a63b8d6411815b293556c1d12e01b2",
+    "mtime": 1785567994.3878062,
+    "ast_hash": "8439cab7ff904dcd81852ef2c89a66f1",
     "semantic_hash": ""
   },
   "src/hooks/usePoseSession.js": {
-    "mtime": 1785566867.9044516,
-    "ast_hash": "31ecdcbaf661e440c7dadb2556bfb5e3",
+    "mtime": 1785897725.8031583,
+    "ast_hash": "3a4acb470541d61d5e49a7e7f7e3633b",
     "semantic_hash": ""
   },
   "src/hooks/useWakeLock.js": {
-    "mtime": 1785566490.212334,
-    "ast_hash": "3ea389d4a1d35ceae29e4bfe52970e81",
+    "mtime": 1785567994.3878062,
+    "ast_hash": "7251e1d3837f9ca5db306eebd7eb02b0",
     "semantic_hash": ""
   },
   "src/lib/counter.js": {
-    "mtime": 1785565859.6656094,
-    "ast_hash": "5ddcb26d1d19a21917eb90f6d6e25f85",
+    "mtime": 1785727615.4455698,
+    "ast_hash": "9c52f5d3a7fccdc49372089167986faf",
     "semantic_hash": ""
   },
   "src/lib/counter.test.js": {
-    "mtime": 1785565939.522509,
-    "ast_hash": "8c49865091e44c1896010bab19a1a55f",
+    "mtime": 1785727615.446569,
+    "ast_hash": "07ec3fb311555e155d1eb9d391e0d605",
     "semantic_hash": ""
   },
   "src/lib/dates.js": {
-    "mtime": 1785565882.3165836,
-    "ast_hash": "24169c834b9fdf74dd5bcaa6d61f3e21",
+    "mtime": 1785567994.3893235,
+    "ast_hash": "357527da575d5a25b09da4c8c6f73bbd",
     "semantic_hash": ""
   },
   "src/lib/exercises.js": {
-    "mtime": 1785565915.7693503,
-    "ast_hash": "3d2766b508dc8c984e61f6cafc2d9213",
+    "mtime": 1785567994.3893235,
+    "ast_hash": "7e1f98a65453124208233444a8350bb4",
     "semantic_hash": ""
   },
   "src/lib/pose.js": {
-    "mtime": 1785566414.7508037,
-    "ast_hash": "0b4e65c4b16e678ed6dc728bf3d44abb",
+    "mtime": 1785567994.3893235,
+    "ast_hash": "46b2d42a2f3d4ea738ddef1979d58841",
     "semantic_hash": ""
   },
   "src/lib/store.js": {
-    "mtime": 1785565908.6817186,
-    "ast_hash": "912e269c3b1a07ef2068585f258c753d",
+    "mtime": 1785727615.446569,
+    "ast_hash": "70c13a1afd77ac216f25abea758d5c3a",
     "semantic_hash": ""
   },
   "src/lib/store.test.js": {
-    "mtime": 1785565963.3952253,
-    "ast_hash": "fc805c7e7026003a6b481f71d8b6afd4",
+    "mtime": 1785727615.446569,
+    "ast_hash": "c457b2b3bc0ab79eba3980482724a8bd",
     "semantic_hash": ""
   },
   "src/main.jsx": {
-    "mtime": 1785565807.63769,
-    "ast_hash": "1b46f2328943f434a51c70bbfcbe43d6",
+    "mtime": 1785567994.3893235,
+    "ast_hash": "8ed50414b2e332f00bc7f93fc365cd10",
     "semantic_hash": ""
   },
   "src/pages/HistoryPage.jsx": {
-    "mtime": 1785567336.689937,
-    "ast_hash": "d3358e67081419c94af7e5c57461ae1b",
+    "mtime": 1785567994.39033,
+    "ast_hash": "b0dc604127ca0159c7d0a120d46dc25a",
     "semantic_hash": ""
   },
   "src/pages/HomePage.jsx": {
-    "mtime": 1785567583.2128084,
-    "ast_hash": "8e70f8bee3fe7092c7313e9d78ef1b9a",
+    "mtime": 1785675004.172577,
+    "ast_hash": "0edbb63ff8c0a201b3666ab2957e62d1",
     "semantic_hash": ""
   },
   "src/pages/PushupSessionPage.jsx": {
-    "mtime": 1785567008.1082547,
-    "ast_hash": "75f20a9fbb824a0dc473e2ae8392926c",
+    "mtime": 1785897725.8031583,
+    "ast_hash": "3e7fc94c63f7e72e8568e91a22c28d2b",
     "semantic_hash": ""
   },
   "src/pages/SettingsPage.jsx": {
-    "mtime": 1785567364.7888908,
-    "ast_hash": "d11ccd4c59db1662a9f7c26b70ed3735",
+    "mtime": 1785727615.4475687,
+    "ast_hash": "d17f85d6e849f76477919afdb6a80508",
     "semantic_hash": ""
   },
   "src/pages/WorkoutPage.jsx": {
-    "mtime": 1785567022.6517403,
-    "ast_hash": "d21299a6a6a2d4ff1bdbea8b9c584740",
+    "mtime": 1785567994.3913295,
+    "ast_hash": "21431d87c12822fc5272caf75abecec1",
     "semantic_hash": ""
   },
   "src/store/StoreContext.jsx": {
-    "mtime": 1785565991.607957,
-    "ast_hash": "2696a32593c3f31a3bcd06d599548d39",
+    "mtime": 1785567994.3913295,
+    "ast_hash": "649fcb81e45c932a2fd1ea4369c6d354",
     "semantic_hash": ""
   },
   "src/store/useStore.js": {
-    "mtime": 1785565998.3800876,
-    "ast_hash": "31022e4d2fa830852e6a042c87c87dee",
+    "mtime": 1785567994.3913295,
+    "ast_hash": "762f35d5bdabf0342fafe785e306c8b6",
     "semantic_hash": ""
   },
   "vite.config.js": {
-    "mtime": 1785565710.8073943,
-    "ast_hash": "e4fc9ddbc9d5f845552e79bbd3cea8a7",
+    "mtime": 1785567994.3923292,
+    "ast_hash": "bcd1b2e6f83a313a73add2e9afd16f7b",
     "semantic_hash": ""
   },
   ".github/workflows/deploy.yml": {
-    "mtime": 1785567889.9058795,
-    "ast_hash": "80ade3a940dc021d25c1138c122ddd1b",
+    "mtime": 1785567994.376773,
+    "ast_hash": "b5f09fade473eee28e4ebf1b8a6c12c2",
     "semantic_hash": ""
   },
   "public/icon-192.png": {
-    "mtime": 1785565756.1670873,
+    "mtime": 1785567994.381791,
     "ast_hash": "796853a6501c45d63e8685d7efa1a64e",
     "semantic_hash": ""
   },
   "public/icon-512.png": {
-    "mtime": 1785565756.1731305,
+    "mtime": 1785567994.381791,
     "ast_hash": "248ea917d121bf0bd20d72a695d04682",
+    "semantic_hash": ""
+  },
+  "src/components/workout/FlameIcon.jsx": {
+    "mtime": 1785897725.8021545,
+    "ast_hash": "c60c5409ae6df6e72b7e1b04e8a13a54",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-08-03-multi-signal-testing.md": {
+    "mtime": 1785724956.9644845,
+    "ast_hash": "84d1b7c093486bf6f2854726c5ae0a9a",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-08-03-multi-signal-testing-design.md": {
+    "mtime": 1785724493.1677256,
+    "ast_hash": "8b3d6c6a546ebd1f217b283e640ab365",
+    "semantic_hash": ""
+  },
+  "i-want-to-create-wondrous-flask.md": {
+    "mtime": 1785897725.8021545,
+    "ast_hash": "568dfae4bc55b0417f97027db8b83908",
     "semantic_hash": ""
   }
 }
